@@ -2,18 +2,50 @@ import React from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { Dropbox } from 'dropbox';
 import fetch from 'isomorphic-unfetch';
-import { JSDOM } from 'jsdom'
+import { JSDOM } from 'jsdom';
 import { entryFilter, normalizeDropboxId } from '../helper';
+import Head from 'next/head';
+import { parseTitle } from '../helper/perser';
+import { TitleObject } from '../types';
+import { CategoryTag } from '../components/category-tag';
+import Interweave from 'interweave';
 
-type Props = { __html: string };
+type Props = { html: string; titleObject: TitleObject };
 
-export default function Entry({ __html }: Props) {
-  return <div dangerouslySetInnerHTML={{ __html }} />;
+export default function Entry({
+  html,
+  titleObject: { title, date, meta },
+}: Props) {
+  console.log(meta);
+  return (
+    <>
+      <Head>
+        <title>{title}</title>
+      </Head>
+      <div className="p-8 w-full shadow-2xl">
+        <div className="flex justify-between">
+          <div className="h-auto flex flex-col justify-center">
+            <p>{date}</p>
+          </div>
+          <div className="flex justify-end m-1">
+            {meta &&
+              meta.tags &&
+              meta.tags.map((tag: string, idx: number) => (
+                <CategoryTag key={idx} tag={tag} />
+              ))}
+          </div>
+        </div>
+        <Interweave content={html} />
+      </div>
+    </>
+  );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-  const { entries } = await dbx.filesListFolder({ path: '/_diary/2020' });
+  const { entries } = await dbx.filesListFolder({
+    path: `/${process.env.ARTICLE_PATH}/2020`,
+  });
 
   return {
     paths: entries
@@ -26,7 +58,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 type StaticProps = {
   id: string;
 };
-export const getStaticProps: GetStaticProps<{}, StaticProps> = async (
+export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
   context
 ) => {
   const entryId = context.params?.id;
@@ -35,7 +67,9 @@ export const getStaticProps: GetStaticProps<{}, StaticProps> = async (
   }
 
   const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-  const { entries } = await dbx.filesListFolder({ path: '/_diary/2020' });
+  const { entries } = await dbx.filesListFolder({
+    path: `/${process.env.ARTICLE_PATH}/2020`,
+  });
   const entry = entries
     .filter(entryFilter)
     .find((e) => normalizeDropboxId(e.id) === entryId);
@@ -48,8 +82,28 @@ export const getStaticProps: GetStaticProps<{}, StaticProps> = async (
   });
   const buf: Buffer = (metadata as any).fileBinary;
 
-  const { window } = new JSDOM(buf.toString())
-  const __html = window.document.querySelector('html')!.innerHTML
+  const { window } = new JSDOM(buf.toString());
+  const { body } = window.document;
+  Array.from(body.querySelectorAll('a'))
+    .filter((el) => el.href.match(/\.(jpeg|png)$/))
+    .forEach((el) => {
+      const imgEl = window.document.createElement('img');
+      imgEl.src = el.href;
+      imgEl.className = 'w-64';
+      el.replaceWith(imgEl);
+    });
 
-  return { props: { __html } };
+  const titleDOM = body.querySelector('div.ace-line:first-child');
+  const titleObject = parseTitle(titleDOM?.textContent || undefined);
+
+  if (titleDOM) {
+    titleDOM.textContent = titleObject.title;
+  }
+
+  const html = `\
+<div>
+${window.document.body.innerHTML}
+</div>`;
+
+  return { props: { html, titleObject } };
 };

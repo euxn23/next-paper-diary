@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind utilities;
+
+:root {
+  font-size: 20px;
+  line-height: 1.625em;
+}
+
+a {
+  color: #4299e1;
+}
+
+h1,
+div.ace-line:first-child {
+  line-height: 2em;
+  font-size: 2em;
+  padding-bottom: 1em;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+h3 {
+  font-size: 1.25em;
+}
+
+.listtype-bullet {
+  list-style-position: inside;
+
+  &.list-bullet1,
+  &.list-bullet4,
+  &.list-bullet7 {
+    list-style-type: disc;
+  }
+
+  &.list-bullet2,
+  &.list-bullet5,
+  &.list-bullet8 {
+    margin-left: 2em;
+    list-style-type: circle;
+  }
+
+  &.list-bullet3,
+  &.list-bullet6 {
+    margin-left: 4em;
+    list-style-type: square;
+  }
+}
+
+.listtype-task {
+  list-style-position: outside;
+
+  &::before {
+    height: 0.75em;
+    width: 0.75em;
+    border-radius: 1em;
+    border-color: lightgray;
+    background: white;
+  }
+  &.list-task-1 {
+  }
+  &.list-task-2 {
+    margin-left: 4em;
+  }
+}
+
+.line-list-type-code,
+.inline-code {
+  box-sizing: border-box;
+  background: #f7f9fa;
+  border: 1px solid #e6e8eb;
+  margin-top: -1px;
+  font-size: 0.75em;
+
+  & + .line-list-type-code {
+    border-top: none;
+  }
+}
+/* purgecss end ignore */
