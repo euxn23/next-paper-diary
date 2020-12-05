@@ -3,26 +3,33 @@
 
 :root {
   font-size: 20px;
-  line-height: 1.625em;
+  line-height: 1.625rem;
 }
+
+/*! purgecss start ignore */
 
 a {
   color: #4299e1;
+  word-break: break-all;
 }
 
 h1,
 div.ace-line:first-child {
-  line-height: 2em;
-  font-size: 2em;
-  padding-bottom: 1em;
+  line-height: 2rem;
+  font-size: 2rem;
+  padding-bottom: 1rem;
 }
 
 h2 {
-  font-size: 1.5em;
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+  margin: 0.5rem 0;
 }
 
 h3 {
   font-size: 1.25em;
+  line-height: 2rem;
+  margin: 0.25rem 0;
 }
 
 .listtype-bullet {
@@ -71,10 +78,11 @@ h3 {
   background: #f7f9fa;
   border: 1px solid #e6e8eb;
   margin-top: -1px;
-  font-size: 0.75em;
+  font-size: 0.75rem;
+  word-break: break-all;
 
   & + .line-list-type-code {
     border-top: none;
   }
 }
-/* purgecss end ignore */
+/*! purgecss end ignore */

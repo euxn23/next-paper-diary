@@ -1,5 +1,7 @@
+import { files } from 'dropbox';
+
 export function entryFilter(
-  entry: DropboxTypes.files.ListFolderResult['entries'][number]
-): entry is DropboxTypes.files.FileMetadataReference {
+  entry: files.ListFolderResult['entries'][number]
+): entry is files.FileMetadataReference {
   return entry['.tag'] === 'file';
 }

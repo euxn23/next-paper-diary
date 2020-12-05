@@ -4,10 +4,10 @@ import { monthNames } from '../helper/month-names';
 import { normalizePaperTitle } from '../helper';
 import { parseTitle } from '../helper/perser';
 import { CategoryTag } from './category-tag';
+import { files } from 'dropbox';
 
 type Props = {
-  entry: DropboxTypes.files.FileMetadataReference;
-  year: number;
+  entry: files.FileMetadataReference;
 };
 
 const colors = [
@@ -17,13 +17,13 @@ const colors = [
   'bg-green-300',
   'bg-blue-300',
   'bg-indigo-300',
-  'bg-purple-300',
+  'bg-purple-300'
 ];
 
-export function ArticleTitle({ entry, year }: Props) {
+export function ArticleTitle({ entry }: Props) {
   const titleObject = parseTitle(normalizePaperTitle(entry.name));
-  const { title, date: mmdd, meta } = titleObject;
-  const postedAt = dayjs(`${year}${mmdd || '0101'}`);
+  const { title, date: yyyymmdd, meta } = titleObject;
+  const postedAt = dayjs(`${yyyymmdd || '20200101'}`);
 
   const monthName = monthNames[postedAt.month()];
   const date = postedAt.date();
@@ -31,26 +31,30 @@ export function ArticleTitle({ entry, year }: Props) {
   const dateColor = colors[day % 7];
 
   return (
-    <div className="flex shadow rounded-lg w-full bg-white m-2 relative">
-      <div
-        className={`${dateColor} rounded-lg lg:w-2/12 py-4 block h-full shadow-inner`}
-      >
-        <div className="text-center tracking-wide">
-          <div className="text-white font-bold text-4xl">{date}</div>
-          <div className="text-white font-normal text-2xl">{monthName}</div>
+    <div className='flex w-full shadow rounded bg-white m-2 relative'>
+      <div className='flex w-1/6'>
+        <div
+          className={`flex justify-around w-full ${dateColor} rounded-sm py-4 block shadow-inner`}
+        >
+          <div className='text-center tracking-wide'>
+            <div className='text-white font-bold text-4xl'>{date}</div>
+            <div className='text-white font-normal text-2xl'>{monthName}</div>
+          </div>
         </div>
       </div>
-      <div className="w-full m-auto tracking-wide">
-        <div className="font-semibold text-gray-800 text-xl text-center lg:text-left px-2">
-          {title}
+      <div className="flex flex-col justify-between w-5/6 p-2">
+        <div className='flex justify-start w-full m-auto tracking-wide'>
+          <div className='font-semibold text-gray-800 text-xl text-center lg:text-left px-2'>
+            {title}
+          </div>
         </div>
-      </div>
-      <div style={{ position: 'absolute', bottom: '1em', right: '1em' }}>
-        {meta &&
+        <div className='flex justify-end'>
+          {meta &&
           meta.tags &&
           meta.tags.map((tag: string, idx: number) => (
             <CategoryTag key={idx} tag={tag} />
           ))}
+        </div>
       </div>
     </div>
   );

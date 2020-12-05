@@ -12,27 +12,24 @@ import Interweave from 'interweave';
 
 type Props = { html: string; titleObject: TitleObject };
 
-export default function Entry({
-  html,
-  titleObject: { title, date, meta },
-}: Props) {
+export default function Entry({ html, titleObject: { title, date, meta } }: Props) {
   console.log(meta);
   return (
     <>
       <Head>
         <title>{title}</title>
       </Head>
-      <div className="p-8 w-full shadow-2xl">
-        <div className="flex justify-between">
-          <div className="h-auto flex flex-col justify-center">
+      <div className='p-8 w-full shadow-2xl'>
+        <div className='flex justify-between'>
+          <div className='h-auto flex flex-col justify-center'>
             <p>{date}</p>
           </div>
-          <div className="flex justify-end m-1">
+          <div className='flex justify-end m-1'>
             {meta &&
-              meta.tags &&
-              meta.tags.map((tag: string, idx: number) => (
-                <CategoryTag key={idx} tag={tag} />
-              ))}
+            meta.tags &&
+            meta.tags.map((tag: string, idx: number) => (
+              <CategoryTag key={idx} tag={tag} />
+            ))}
           </div>
         </div>
         <Interweave content={html} />
@@ -43,15 +40,15 @@ export default function Entry({
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-  const { entries } = await dbx.filesListFolder({
-    path: `/${process.env.ARTICLE_PATH}/2020`,
+  const { result } = await dbx.filesListFolder({
+    path: ''
   });
 
   return {
-    paths: entries
+    paths: result.entries
       .filter(entryFilter)
       .map((entry) => `/${normalizeDropboxId(entry.id)}`),
-    fallback: false,
+    fallback: false
   };
 };
 
@@ -67,10 +64,8 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
   }
 
   const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
-  const { entries } = await dbx.filesListFolder({
-    path: `/${process.env.ARTICLE_PATH}/2020`,
-  });
-  const entry = entries
+  const { result } = await dbx.filesListFolder({ path: '' });
+  const entry = result.entries
     .filter(entryFilter)
     .find((e) => normalizeDropboxId(e.id) === entryId);
   if (!entry?.path_display) {
@@ -78,9 +73,9 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
   }
 
   const metadata = await dbx.filesExport({
-    path: entry.path_display,
+    path: entry.path_display
   });
-  const buf: Buffer = (metadata as any).fileBinary;
+  const buf: Buffer = (metadata.result as any).fileBinary;
 
   const { window } = new JSDOM(buf.toString());
   const { body } = window.document;

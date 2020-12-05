@@ -7,6 +7,5 @@ type Props = {
 
 export function CategoryTag({ tag }: Props) {
   const color = tagColors[tag] || 'bg-gray-500 text-white';
-  console.log(tagColors[tag])
-  return <span className={`mx-1 px-2 py-1 ${color}`}>{tag}</span>;
+  return <span className={`rounded-lg mx-1 px-4 py-1 ${color}`}>{tag}</span>;
 }
