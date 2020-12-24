@@ -9,22 +9,24 @@ import { parseTitle } from '../helper/perser';
 import { TitleObject } from '../types';
 import { CategoryTag } from '../components/category-tag';
 import Interweave from 'interweave';
+import { isMatchImageURL } from '../helper/is-match-image-url';
+import ogs from 'open-graph-scraper';
+import { buildOGPDOMString } from '../helper/build-ogp-domstring';
 
 type Props = { html: string; titleObject: TitleObject };
 
 export default function Entry({ html, titleObject: { title, date, meta } }: Props) {
-  console.log(meta);
   return (
     <>
       <Head>
         <title>{title}</title>
       </Head>
-      <div className='p-8 w-full shadow-2xl'>
+      <div className='p-4 sm:p-8 w-full shadow-2xl'>
         <div className='flex justify-between'>
           <div className='h-auto flex flex-col justify-center'>
             <p>{date}</p>
           </div>
-          <div className='flex justify-end m-1'>
+          <div className='flex justify-end m-1 flex-wrap'>
             {meta &&
             meta.tags &&
             meta.tags.map((tag: string, idx: number) => (
@@ -79,14 +81,40 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 
   const { window } = new JSDOM(buf.toString());
   const { body } = window.document;
-  Array.from(body.querySelectorAll('a'))
-    .filter((el) => el.href.match(/\.(jpeg|png)$/))
-    .forEach((el) => {
-      const imgEl = window.document.createElement('img');
-      imgEl.src = el.href;
-      imgEl.className = 'w-64';
-      el.replaceWith(imgEl);
+
+  const anchorDOMs = Array.from(body.querySelectorAll('a'));
+
+  const imagesDOMs = anchorDOMs.filter((el) => isMatchImageURL(el.href));
+  const urlDOMs = anchorDOMs.filter((el) => !isMatchImageURL(el.href))
+    .filter((el) => {
+      try {
+        new URL(el.text);
+        return true;
+      } catch {
+        return false;
+      }
     });
+
+  // replace image url to img tag
+  imagesDOMs.forEach((el) => {
+    const imgEl = window.document.createElement('img');
+    imgEl.src = el.href;
+    imgEl.className = 'w-64';
+    el.replaceWith(imgEl);
+  });
+
+  // extend OGP
+  await Promise.all(urlDOMs.map(async (el) => {
+    const ogpResult = await ogs({ url: el.href, timeout: 3600 }).then((data) => data.error ? undefined : data.result);
+    if (!ogpResult) {
+      return;
+    }
+
+    const ogpDOMString = buildOGPDOMString(ogpResult);
+
+    const ogpEl = new JSDOM(ogpDOMString).window.document.body;
+    el.replaceWith(ogpEl);
+  }));
 
   const titleDOM = body.querySelector('div.ace-line:first-child');
   const titleObject = parseTitle(titleDOM?.textContent || undefined);
