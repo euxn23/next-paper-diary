@@ -2,12 +2,14 @@ import { TitleObject } from '../types';
 
 const dateRegExp = /\[(.*)]\s?/
 const tagRegExp = /\s?#([^\s#]*)/g
+const appTitle = process.env.APP_TITLE ?? ''
 
 // [MMdd] cool title #hash #tags
 export function parseTitle(titleText?: string): TitleObject {
   if (!titleText)
     return {
       title: '',
+      appTitle: '',
       date: '',
       meta: {},
     };
@@ -23,6 +25,7 @@ export function parseTitle(titleText?: string): TitleObject {
 
   return {
     title,
+    appTitle,
     date,
     meta: {
       tags,

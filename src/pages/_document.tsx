@@ -5,6 +5,7 @@ import {
   Main,
   NextScript
 } from 'next/document';
+import { appImage } from '../constants';
 
 const { NEXT_PUBLIC_GA_TRACKING_ID } = process.env;
 
@@ -29,6 +30,8 @@ export default class Document extends NextDocument {
           `
             }}
           />
+          <link rel="shortcut icon" href="/static/favicon.ico" />
+          <link rel="apple-touch-icon" href={appImage} />
         </Head>
         <body>
         <Main />

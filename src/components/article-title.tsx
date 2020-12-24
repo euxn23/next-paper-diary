@@ -48,7 +48,7 @@ export function ArticleTitle({ entry }: Props) {
             {title}
           </div>
         </div>
-        <div className='flex justify-end'>
+        <div className='flex justify-end flex-wrap'>
           {meta &&
           meta.tags &&
           meta.tags.map((tag: string, idx: number) => (

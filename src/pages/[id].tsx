@@ -12,14 +12,31 @@ import Interweave from 'interweave';
 import { isMatchImageURL } from '../helper/is-match-image-url';
 import ogs from 'open-graph-scraper';
 import { buildOGPDOMString } from '../helper/build-ogp-domstring';
+import { appImage, hostname } from '../constants';
 
-type Props = { html: string; titleObject: TitleObject };
+type Props = { html: string; titleObject: TitleObject, entryId: string };
 
-export default function Entry({ html, titleObject: { title, date, meta } }: Props) {
+export default function Entry({ html, titleObject: { title, appTitle, date, meta }, entryId }: Props) {
+  const fullTitle = `${title} - ${appTitle}`
+
   return (
     <>
       <Head>
-        <title>{title}</title>
+        <title>{fullTitle}</title>
+        <meta property='og:title' content={fullTitle} />
+        <meta property='og:description' content={title} />
+        <meta name='keywords' content={meta?.tags.join(',')} />
+        <meta property='og:type' content='blog' />
+        <meta property='og:url' content={`${hostname}/${entryId}`} />
+        <meta property='og:image' content={appImage} />
+        <meta property='og:site_name' content={appTitle} />
+        <meta name='twitter:card' content='summary' />
+        <meta name='twitter:site' content='@euxn23' />
+        <meta name='twitter:url' content={`${hostname}/${entryId}`} />
+        <meta name='twitter:title' content={fullTitle} />
+        <meta name='twitter:description' content={title} />
+        <meta name='twitter:image' content={appImage} />
+        <link rel='canonical' href={`${hostname}/${entryId}`} />
       </Head>
       <div className='p-4 sm:p-8 w-full shadow-2xl'>
         <div className='flex justify-between'>
@@ -128,5 +145,5 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 ${window.document.body.innerHTML}
 </div>`;
 
-  return { props: { html, titleObject } };
+  return { props: { html, titleObject, entryId } };
 };
