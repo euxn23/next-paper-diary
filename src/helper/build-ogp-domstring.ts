@@ -5,7 +5,7 @@ export function buildOGPDOMString(ogsResult: ogs.SuccessResult['result']): strin
 
   return `\
     <a href="${ogsResult.ogUrl}" class="flex block border-2 rounded flex-col sm:flex-row bg-white" style="max-width: 36rem; min-height: 8rem">
-      ${ogsResult.ogImage ? `
+      ${ogsResult.ogImage && ogsResult.ogImage.url? `
       <div class="flex flex-row sm:flex-col justify-center">
         <div class="w-32">
           <img class="object-fill max-h-32" src="${ogsResult.ogImage.url}" alt="${ogsResult.ogImage.url}" />
