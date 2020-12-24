@@ -21,8 +21,8 @@ export default class App extends NextApp<Props> {
             <Link href='/'><p className='ml-4 text-gray-500 leading-10 text-lg font-bold no-underline cursor-pointer'>blog.euxn.me</p></Link>
           </div>
 
-          <div className='flex justify-center bg-gray-100 text-base sm:text-sm md:text-base lg:text-base xl:text-base' style={{ minHeight: 'calc(100vh - 2.5rem)'}}>
-            <div className='container w-full m-4' style={{ maxWidth: 1024 }}>
+          <div className='flex justify-center bg-gray-100 text-base sm:text-sm' style={{ minHeight: 'calc(100vh - 2.5rem)'}}>
+            <div className='container w-full m-0 lg:m-4' style={{ maxWidth: 1024 }}>
               <Component {...pageProps} />
             </div>
           </div>
