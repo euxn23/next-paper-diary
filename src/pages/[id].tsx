@@ -12,12 +12,16 @@ import Interweave from 'interweave';
 import { isMatchImageURL } from '../helper/is-match-image-url';
 import ogs from 'open-graph-scraper';
 import { buildOGPDOMString } from '../helper/build-ogp-domstring';
-import { appImage, hostname } from '../constants';
+import { appImage, appTitle, hostname } from '../constants';
+import dayjs from 'dayjs';
+import { dayJaList } from '../helper/day-ja-list';
 
 type Props = { html: string; titleObject: TitleObject, entryId: string };
 
-export default function Entry({ html, titleObject: { title, appTitle, date, meta }, entryId }: Props) {
-  const fullTitle = `${title} - ${appTitle}`
+export default function Entry({ html, titleObject: { title, date, meta }, entryId }: Props) {
+  const fullTitle = `${title} - ${appTitle}`;
+  const dateDayjs = dayjs(date);
+  const dateString = `${dateDayjs.year()}/${dateDayjs.month() + 1}/${dateDayjs.date()} (${dayJaList[dateDayjs.day()]})`;
 
   return (
     <>
@@ -39,11 +43,12 @@ export default function Entry({ html, titleObject: { title, appTitle, date, meta
         <link rel='canonical' href={`${hostname}/${entryId}`} />
       </Head>
       <div className='p-4 sm:p-8 w-full shadow-2xl'>
-        <div className='flex justify-between'>
-          <div className='h-auto flex flex-col justify-center'>
-            <p>{date}</p>
+        <h1>{title}</h1>
+        <div className='w-full flex flex-col'>
+          <div className='flex justify-end m-1'>
+            <p>{dateString}</p>
           </div>
-          <div className='flex justify-end m-1 flex-wrap'>
+          <div className='flex justify-end flex-wrap'>
             {meta &&
             meta.tags &&
             meta.tags.map((tag: string, idx: number) => (
@@ -135,6 +140,7 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 
   const titleDOM = body.querySelector('div.ace-line:first-child');
   const titleObject = parseTitle(titleDOM?.textContent || undefined);
+  titleDOM?.remove();
 
   if (titleDOM) {
     titleDOM.textContent = titleObject.title;

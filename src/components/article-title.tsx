@@ -4,6 +4,7 @@ import { normalizePaperTitle } from '../helper';
 import { parseTitle } from '../helper/perser';
 import { CategoryTag } from './category-tag';
 import { files } from 'dropbox';
+import { dayJaList } from '../helper/day-ja-list';
 
 type Props = {
   entry: files.FileMetadataReference;
@@ -19,14 +20,12 @@ const colors = [
   'bg-purple-300'
 ];
 
-const dayJaList = ['日', '月', '火', '水', '木', '金', '土']
-
 export function ArticleTitle({ entry }: Props) {
   const titleObject = parseTitle(normalizePaperTitle(entry.name));
   const { title, date: yyyymmdd, meta } = titleObject;
   const postedAt = dayjs(`${yyyymmdd || '20200101'}`);
 
-  const year = postedAt.year()
+  const year = postedAt.year();
   const date = postedAt.format('MM/DD');
   const day = postedAt.day();
   const dateColor = colors[day];
@@ -44,7 +43,7 @@ export function ArticleTitle({ entry }: Props) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-between w-5/6 p-2">
+      <div className='flex flex-col justify-between w-5/6 p-2'>
         <div className='flex justify-start w-full m-auto tracking-wide'>
           <div className='font-semibold text-gray-800 text-xl text-center lg:text-left px-2'>
             {title}
