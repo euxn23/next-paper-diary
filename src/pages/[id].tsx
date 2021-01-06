@@ -16,9 +16,9 @@ import { appImage, appTitle, hostname } from '../constants';
 import dayjs from 'dayjs';
 import { dayJaList } from '../helper/day-ja-list';
 
-type Props = { html: string; titleObject: TitleObject, entryId: string };
+type Props = { html: string; titleObject: TitleObject, entryId: string, canonical: boolean };
 
-export default function Entry({ html, titleObject: { title, date, meta }, entryId }: Props) {
+export default function Entry({ html, titleObject: { title, date, meta }, entryId, canonical }: Props) {
   const fullTitle = `${title} - ${appTitle}`;
   const dateDayjs = dayjs(date);
   const dateString = `${dateDayjs.year()}/${dateDayjs.month() + 1}/${dateDayjs.date()} (${dayJaList[dateDayjs.day()]})`;
@@ -40,7 +40,7 @@ export default function Entry({ html, titleObject: { title, date, meta }, entryI
         <meta name='twitter:title' content={fullTitle} />
         <meta name='twitter:description' content={title} />
         <meta name='twitter:image' content={appImage} />
-        <link rel='canonical' href={`${hostname}/${entryId}`} />
+        {canonical && <link rel='canonical' href={`${hostname}/${entryId.toLowerCase()}`} />}
       </Head>
       <div className='p-4 sm:p-8 w-full shadow-2xl'>
         <h1>{title}</h1>
@@ -68,10 +68,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
     path: ''
   });
 
+  const caseSensitivePaths = result.entries
+    .filter(entryFilter)
+    .map((entry) => `/${normalizeDropboxId(entry.id)}`);
+
   return {
-    paths: result.entries
-      .filter(entryFilter)
-      .map((entry) => `/${normalizeDropboxId(entry.id)}`),
+    paths: [...caseSensitivePaths, ...caseSensitivePaths.map(p => p.toLowerCase())],
     fallback: false
   };
 };
@@ -87,11 +89,13 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
     throw new Error();
   }
 
+  const canonical = entryId !== entryId.toLowerCase();
+
   const dbx = new Dropbox({ accessToken: process.env.DROPBOX_TOKEN, fetch });
   const { result } = await dbx.filesListFolder({ path: '' });
   const entry = result.entries
     .filter(entryFilter)
-    .find((e) => normalizeDropboxId(e.id) === entryId);
+    .find((e) => normalizeDropboxId(e.id).toLowerCase() === entryId.toLowerCase());
   if (!entry?.path_display) {
     throw new Error();
   }
@@ -138,7 +142,7 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
     el.replaceWith(ogpEl);
   }));
 
-  const titleDOM = body.querySelector('div.ace-line:first-child');
+  const titleDOM = body.querySelector<HTMLDivElement>('div.ace-line:first-child');
   const titleObject = parseTitle(titleDOM?.textContent || undefined);
   titleDOM?.remove();
 
@@ -151,5 +155,5 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 ${window.document.body.innerHTML}
 </div>`;
 
-  return { props: { html, titleObject, entryId }, revalidate: 60 };
+  return { props: { html, titleObject, entryId: entryId.toLowerCase(), canonical }, revalidate: 60 };
 };

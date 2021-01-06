@@ -37,7 +37,7 @@ export default function Index({ entries }: Props) {
       <div>
         {entries.map(({ entry }) => (
           <div key={entry.content_hash}>
-            <a href={`/${entry.id.replace('id:', '')}`}>
+            <a href={`/${entry.id.replace('id:', '').toLowerCase()}`}>
               <ArticleTitle entry={entry} />
             </a>
           </div>
