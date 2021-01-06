@@ -1,6 +1,22 @@
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
 
 module.exports = {
+  purge: {
+    content: [
+      './src/**/*.tsx',
+      './src/**/*.ts',
+      './src/pages/style.scss'
+    ],
+    defaultExtractor: (content) =>
+      content.match(/[\w-/:]+(?<!:)/g) || [],
+    whitelist: [
+      'ace-line',
+      'listtype-bullet',
+      'listtype-task',
+      'line-list-type-code',
+      'inline-code'
+    ]
+  },
   theme: {
     colors: {
       white: colors.white,
@@ -17,4 +33,4 @@ module.exports = {
       amber: colors.amber
     }
   }
-}
+};
