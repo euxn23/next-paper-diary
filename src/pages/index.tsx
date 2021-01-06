@@ -65,5 +65,5 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
         .map((entry) => ({ entry }))
     );
 
-  return { props: { entries } };
+  return { props: { entries }, revalidate: 60 };
 };

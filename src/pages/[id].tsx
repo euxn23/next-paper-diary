@@ -151,5 +151,5 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 ${window.document.body.innerHTML}
 </div>`;
 
-  return { props: { html, titleObject, entryId } };
+  return { props: { html, titleObject, entryId }, revalidate: 60 };
 };
