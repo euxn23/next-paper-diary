@@ -9,13 +9,17 @@ module.exports = {
     ],
     defaultExtractor: (content) =>
       content.match(/[\w-/:]+(?<!:)/g) || [],
-    whitelist: [
-      'ace-line',
-      'listtype-bullet',
-      'listtype-task',
-      'line-list-type-code',
-      'inline-code'
-    ]
+    options: {
+      safelist: [
+        'ace-line',
+        'listtype-bullet',
+        'listtype-task',
+        'line-list-type-code',
+        'inline-code',
+        /^bg-.*/,
+        /^text-.*/
+      ]
+    }
   },
   theme: {
     colors: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { default as NextApp } from 'next/app';
 import './style.scss';
 import Link from 'next/link';
-import { appTitle } from '../constants';
+import { appTitle, themeColor } from '../constants';
 
 type Props = {
   title?: string;
@@ -13,7 +13,7 @@ export default class App extends NextApp<Props> {
     const { Component, pageProps } = this.props;
     return (
       <div className='min-h-screen'>
-        <div className='flex h-10 leading-10 w-full bg-green-200'>
+        <div className={`flex h-10 leading-10 w-full bg-${themeColor}`}>
           <Link href='/'><p className='ml-4 text-gray-500 leading-10 text-lg font-bold no-underline cursor-pointer'>{appTitle}</p></Link>
         </div>
 
