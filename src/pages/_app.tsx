@@ -2,6 +2,7 @@ import React from 'react';
 import { default as NextApp } from 'next/app';
 import './style.scss';
 import Link from 'next/link';
+import { appTitle } from '../constants';
 
 type Props = {
   title?: string;
@@ -13,7 +14,7 @@ export default class App extends NextApp<Props> {
     return (
       <div className='min-h-screen'>
         <div className='flex h-10 leading-10 w-full bg-green-200'>
-          <Link href='/'><p className='ml-4 text-gray-500 leading-10 text-lg font-bold no-underline cursor-pointer'>blog.euxn.me</p></Link>
+          <Link href='/'><p className='ml-4 text-gray-500 leading-10 text-lg font-bold no-underline cursor-pointer'>{appTitle}</p></Link>
         </div>
 
         <div className='flex justify-center bg-gray-100 text-base sm:text-sm' style={{ minHeight: 'calc(100vh - 2.5rem)' }}>
