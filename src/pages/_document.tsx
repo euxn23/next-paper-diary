@@ -37,6 +37,7 @@ export default class Document extends NextDocument {
         <Main />
         <NextScript />
         </body>
+        <script async src='https://platform.twitter.com/widgets.js' charSet="utf-8" />
       </Html>
     );
   }

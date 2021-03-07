@@ -131,6 +131,19 @@ export const getStaticProps: GetStaticProps<Props, StaticProps> = async (
 
   // extend OGP
   await Promise.all(urlDOMs.map(async (el) => {
+    if (el.href.match(/twitter\.com/)) {
+      const twitterDOMString = `\
+<div>
+<blockquote class="twitter-tweet">
+  <a href="${el.href}">${el.href}</a>
+</blockquote>
+</div>
+`
+      const twitterEl = new JSDOM(twitterDOMString).window.document.body;
+      el.replaceWith(twitterEl)
+      return;
+    }
+
     const ogpResult = await ogs({ url: el.href, timeout: 3600 }).then((data) => data.error ? undefined : data.result);
     if (!ogpResult) {
       return;
